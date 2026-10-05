@@ -10,21 +10,21 @@ hii
     git status
 
 
-To add file in which changed made
+# To add file in which changed made
     git add readme.md(filename)
 
 
-To add all file
+# To add all file
     git add .
 
 
-To commit changes
+# To commit changes
     git commit -m "write message"
 
 
-To change branch
+# To change branch
     git branch -M main
 
 
-To push changes to branch
+# To push changes to branch
     git push -u origin man   
