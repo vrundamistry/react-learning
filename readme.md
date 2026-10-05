@@ -2,11 +2,11 @@ test11
 hello
 hii
 
-To initialize
+# To initialize
     git init
 
 
-To check status
+# To check status
     git status
 
 
