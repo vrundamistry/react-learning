@@ -11,23 +11,24 @@ function ExpenseList({ expenses, editExpense }) {
     const [selectedCategory, setSelectedCategory] = useState("all")
     const [search, setSearch] = useState("")
 
+    let filteredExpenses = expenses
 
     // search by name filter
     if (search !== "") {
-        expenses = [...expenses].filter(
+        filteredExpenses = [...expenses].filter(
            (exp) => exp.name.toLowerCase().includes(search.toLowerCase())  
         )
     }
 
     // search by category [category-wise expense filter]
     if (selectedCategory !== "all") {
-        expenses = [...expenses].filter(
+        filteredExpenses = [...expenses].filter(
             (exp) => exp.category === selectedCategory
         )
     }  
 
     // month-wise expense filter
-    let monthExpense = expenses;
+    let monthExpense = filteredExpenses;
     if (selectedMonth !== "all") {
         monthExpense = expenses.filter(
             (expense) => getMonthKey(expense.date) === selectedMonth
@@ -63,7 +64,7 @@ function ExpenseList({ expenses, editExpense }) {
         setSelectedMonth("all")
     }
 
-    
+
     return (
         <>
             <h1 className="mb-6 text-xl">My Expenses</h1>

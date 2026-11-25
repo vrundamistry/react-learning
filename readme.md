@@ -10,7 +10,7 @@ hii
     git status
 
 
-# To add file in which changed made
+# To add file in which changes made
     git add readme.md(filename)
 
 
@@ -27,4 +27,4 @@ hii
 
 
 # To push changes to branch
-    git push -u origin man   
+    git push -u origin main   
