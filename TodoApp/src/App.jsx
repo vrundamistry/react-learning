@@ -1,11 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {TaskBox, TodoForm, TodoList} from './components/'
 
 function App() {
 
   const [taskName, setTaskName] = useState("")
-  const [taskList, setTaskList] = useState([])
+  // const [taskList, setTaskList] = useState([])
+  const [taskList, setTaskList] = useState(() => {
+    const enabled = localStorage.getItem("todo_storage_enabled") === "true";
+    const savedTasks = localStorage.getItem("todo_tasks");
+    if(enabled){
+      return savedTasks ? JSON.parse(savedTasks) : [];
+    }else{
+      return [];
+    }
+
+    return [];    
+  })
+
   const [error, setError] = useState("")
+  const [isStorageEnabled, setIsStorageEnabled] = useState(() => localStorage.getItem("todo_storage_enabled") === "true")
+  //console.log("isStorageEnabled: ", isStorageEnabled)
+
+  const [filter, setFilter] = useState("all")
 
   const remainingCount = taskList.filter((task) => !task.completed).length
 
@@ -64,6 +80,35 @@ function App() {
     )
   }
 
+  useEffect(() => {
+    if(isStorageEnabled){
+      localStorage.setItem("todo_storage_enabled", "true");
+      localStorage.setItem("todo_tasks", JSON.stringify(taskList));
+    }else{
+      localStorage.setItem("todo_storage_enabled", "false");
+      localStorage.removeItem("todo_tasks");
+    }
+  }, [taskList, isStorageEnabled]);
+
+  const handleLocalStorageToggle = (e) => {
+    setIsStorageEnabled(e.target.checked);
+  }
+
+
+  const visibleTasks = 
+    filter === "all" 
+      ? taskList
+      : filter  === "active"
+      ? taskList.filter((task) => !task.completed)
+      : filter === "completed"
+      ? taskList.filter((task) => task.completed)
+      : [];
+
+  const handleFilter = (filterType) => {
+    setFilter(filterType);
+  }
+
+
   return (
     <>
       <div className="w-full h-screen flex flex-wrap justify-center text-white">
@@ -89,6 +134,15 @@ function App() {
               <button type="submit" className='h-[46px] px-4 py-2 rounded-xs bg-white text-black text-sm hover:bg-white/80 cursor-pointer'>Add</button>
             </form> */}
 
+
+            <label className='flex justify-end gap-2 mb-2 text-sm'>
+              <input type="checkbox" checked={isStorageEnabled} onChange={handleLocalStorageToggle} />
+              Enable Local Storage
+              <br />
+              {/* <input type="checkbox" checked={isStorageEnabled} onChange={(e) => setIsStorageEnabled(e.target.checked)} />
+              Enable Local Storage */}
+            </label>
+
             <TodoForm
               taskName={taskName}
               onTaskNameChange={setTaskName}
@@ -99,8 +153,28 @@ function App() {
             <hr className="border-gray-800" />
 
             <div className="w-full pt-2.5">
+
+              <div className="flex space-x-2 p-1 rounded-xl mb-2">                
+                <button className={`px-4 py-1 text-[14px] h-7 font-medium rounded-2xl shadow-sm ${
+                  filter === 'all' ? 'bg-white text-blue-600' : 'text-gray-600'
+                }`} onClick={(e) => handleFilter('all')}>
+                  All
+                </button>                
+                <button className={`px-4 py-1 text-[14px] h-7 font-medium rounded-2xl ${
+                  filter === 'active' ? 'bg-white text-blue-600' : 'text-gray-600'
+                }`} onClick={(e) => handleFilter('active')} >
+                  Active
+                </button>
+                <button className={`px-4 py-1 text-[14px] h-7 font-medium rounded-2xl ${
+                  filter === 'completed' ? 'bg-white text-blue-600' : 'text-gray-600'
+                }`} onClick={(e) => handleFilter('completed')}>
+                  Completed
+                </button>
+              </div>
+
+
               <TodoList 
-                taskList={taskList}
+                taskList={visibleTasks}
                 onCheckboxChange={handletoggleComplete}
                 handleDelete={handleDeleteList}
                 remainingCount={remainingCount}
